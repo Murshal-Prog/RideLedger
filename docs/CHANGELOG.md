@@ -7,6 +7,51 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.2.0] - 2026-10-14 — Phase 2: Authentication & Data Foundation
+
+### Added
+- **Database Schema & Migrations**:
+  - `supabase/migrations/20261014000001_initial_schema.sql`: Version-controlled SQL migration defining `profiles`, `work_sessions`, `rides`, and `expenses` tables.
+  - Partial unique index `idx_work_sessions_single_active` enforcing exactly one active session per Captain at any time.
+  - Strict PostgreSQL Row Level Security (RLS) policies on all tables ensuring user-level data isolation (`auth.uid() = user_id`).
+  - Generated columns: `distance_km` (ending - starting odometer) and `total_income_inr` (earning + incentive + tip).
+  - Triggers for automatic `profiles` initialization on user signup and automatic `updated_at` timestamps.
+  - `supabase/migrations/20261014000001_initial_schema_down.sql`: Reversible rollback migration.
+- **Validation Layer (Zod v4)**:
+  - `src/lib/validations/auth.ts`: Validation for email login, password length, and profile registration defaults.
+  - `src/lib/validations/user-profile.ts`: Captain profile settings updates.
+  - `src/lib/validations/work-session.ts`: Starting odometer non-negative, ending odometer `>=` starting odometer.
+  - `src/lib/validations/ride.ts`: Earning `> 0`, incentive `>= 0`, tip `>= 0`, payment method (`cash` or `upi`).
+  - `src/lib/validations/expense.ts`: 10 standardized expense categories, positive amount, required description.
+- **Data Access & Storage Repository Layer**:
+  - `src/lib/repositories/storage-adapter.ts`: Isolated persistent storage layer with strict user boundary validation. Throws `SecurityError` on any unauthorized cross-user access.
+  - `src/lib/repositories/auth-repository.ts`: Handles sign-in, sign-up, session restoration across refreshes, and explicit sign out.
+  - `src/lib/repositories/user-repository.ts`: Profile and Captain settings retrieval and updates.
+  - `src/lib/repositories/work-session-repository.ts`: Work session persistence and duplicate active session prevention.
+  - `src/lib/repositories/ride-repository.ts`: Ride records with automatic total income calculation.
+  - `src/lib/repositories/expense-repository.ts`: Operating expense tracking.
+  - `src/lib/supabase/client.ts`: Supabase client and SSR factory with graceful offline/local fallback.
+- **Authentication State & UI Integration**:
+  - `src/context/auth-context.tsx`: Global auth provider managing persistent user session, profile state, and explicit logout.
+  - `src/app/login/page.tsx`: Responsive login screen with brand logo v5, field validation, and one-click demo login.
+  - `src/app/signup/page.tsx`: Captain registration screen capturing vehicle number, partner ID, and daily targets.
+  - `src/components/layout/header.tsx`: Live Captain profile avatar, partner ID badge, and explicit sign out action.
+  - `src/app/settings/page.tsx`: Interactive Captain Profile & Vehicle settings editor with toast confirmations.
+  - Confirmation dialog before sign out clearly informing the user that financial records remain preserved.
+- **API Route Handlers (Server-Side Isolation)**:
+  - `/api/auth/me`: Authenticated user session retrieval.
+  - `/api/user/profile`: GET and PUT profile with Zod schema validation.
+  - `/api/rides`: GET and POST ride records with user-level data isolation.
+  - `/api/expenses`: GET and POST expense records with user-level data isolation.
+  - `/api/sessions`: GET, POST, and PATCH session lifecycle with single-active-session validation.
+- **Documentation**:
+  - `docs/DATABASE_SCHEMA.md`: ER diagram, table columns, constraints, indexes, and RLS policies.
+  - `docs/ENVIRONMENT_SETUP.md`: Local setup guide for both Local Storage Isolation mode and Supabase Cloud.
+  - Updated `.env.example` with clear comments.
+  - `docs/test-reports/PHASE-02-AUTH-DATA-FOUNDATION-TEST.md`: Complete test evidence report.
+
+---
+
 ## [0.1.0] - 2026-10-14 — Phase 1: Project Foundation
 
 ### Added

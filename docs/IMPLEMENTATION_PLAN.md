@@ -23,11 +23,14 @@ This implementation plan coordinates the phased development of the RideLedger PW
 - [x] Client-side navigation without unnecessary page reloads
 - [x] Phase 1 documentation, changelog, and test report
 
-### Phase 2: Authentication & User Profiles
-- [ ] Supabase Auth integration (Email/Password & OTP)
-- [ ] User profile and Captain settings (Daily target, vehicle info, initial odometer)
-- [ ] Persistent login session across browser restarts
-- [ ] Explicit logout flow without clearing financial records
+### Phase 2: Authentication & User Profiles (Completed)
+- [x] Supabase Auth integration (Email/Password & schema)
+- [x] Version-controlled database migrations with RLS (`supabase/migrations/`)
+- [x] User profile and Captain settings (Daily target, vehicle info, initial odometer)
+- [x] Persistent login session across browser refreshes & PWA restarts
+- [x] Explicit logout flow without clearing financial records
+- [x] Strict user-level data isolation in database, API routes, and repository layer
+- [x] Input validation via Zod on client and data-access layers
 
 ### Phase 3: Work Session & Odometer Lifecycle
 - [ ] Go Online modal with mandatory starting odometer

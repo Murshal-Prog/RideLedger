@@ -17,6 +17,7 @@ export interface ToastItem {
 interface ToastContextType {
   toasts: ToastItem[];
   addToast: (toast: Omit<ToastItem, "id">) => void;
+  showToast: (toast: Omit<ToastItem, "id">) => void;
   removeToast: (id: string) => void;
   toast: {
     success: (title: string, description?: string) => void;
@@ -63,7 +64,7 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
   };
 
   return (
-    <ToastContext.Provider value={{ toasts, addToast, removeToast, toast }}>
+    <ToastContext.Provider value={{ toasts, addToast, showToast: addToast, removeToast, toast }}>
       {children}
       {/* Toast viewport container */}
       <div

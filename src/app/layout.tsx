@@ -3,6 +3,7 @@ import { Inter } from "next/font/google";
 import "@/styles/globals.css";
 import { ThemeProvider } from "@/context/theme-context";
 import { ToastProvider } from "@/context/toast-context";
+import { AuthProvider } from "@/context/auth-context";
 import { WorkSessionProvider } from "@/context/work-session-context";
 import { AppShell } from "@/components/layout/app-shell";
 
@@ -64,9 +65,11 @@ export default function RootLayout({
       <body className="min-h-screen bg-background text-foreground antialiased selection:bg-primary/20 selection:text-primary">
         <ThemeProvider>
           <ToastProvider>
-            <WorkSessionProvider>
-              <AppShell>{children}</AppShell>
-            </WorkSessionProvider>
+            <AuthProvider>
+              <WorkSessionProvider>
+                <AppShell>{children}</AppShell>
+              </WorkSessionProvider>
+            </AuthProvider>
           </ToastProvider>
         </ThemeProvider>
       </body>
