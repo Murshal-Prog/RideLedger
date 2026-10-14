@@ -43,7 +43,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" suppressHydrationWarning className={inter.variable}>
+    <html lang="en" suppressHydrationWarning className={`${inter.variable} dark`}>
       <head>
         <link rel="icon" href="/brand/RideLedger_Logo_v4.png" />
         <script
@@ -51,7 +51,7 @@ export default function RootLayout({
             __html: `(function() {
               try {
                 var stored = localStorage.getItem('rideledger-theme');
-                var isDark = stored === 'dark' || (!stored && window.matchMedia('(prefers-color-scheme: dark)').matches);
+                var isDark = stored ? stored === 'dark' : true;
                 if (isDark) {
                   document.documentElement.classList.add('dark');
                 } else {

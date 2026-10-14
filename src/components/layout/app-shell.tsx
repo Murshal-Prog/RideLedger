@@ -98,7 +98,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           onOpenGoOffline={handleOpenGoOffline}
         />
 
-        <main className="flex-1 w-full max-w-7xl mx-auto px-4 sm:px-6 py-6 pb-24 md:pb-10">
+        <main className="flex-1 w-full max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-6 pb-24 md:pb-12">
           {children}
         </main>
 
