@@ -97,8 +97,7 @@ describe("Phase 2 — Validation Schemas", () => {
       expect(
         createRideSchema.safeParse({
           earningInr: 100,
-          // @ts-expect-error Testing runtime invalid enum
-          paymentMethod: "bitcoin",
+          paymentMethod: "bitcoin" as any,
         }).success
       ).toBe(false);
     });
@@ -116,8 +115,7 @@ describe("Phase 2 — Validation Schemas", () => {
 
     it("rejects invalid category and non-positive amount", () => {
       const invalidCategory = createExpenseSchema.safeParse({
-        // @ts-expect-error Testing runtime invalid enum
-        category: "gambling",
+        category: "gambling" as any,
         description: "Test",
         amountInr: 50,
       });

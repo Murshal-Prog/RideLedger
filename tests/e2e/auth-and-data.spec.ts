@@ -25,16 +25,31 @@ test.describe("Phase 2: Authentication & Data Foundation E2E", () => {
     // Verify heading
     await expect(page.locator("main h1")).toContainText("Captain Sign In");
 
-    // Click submit without entering values -> HTML5 or Zod validation
-    const submitBtn = page.locator('button[type="submit"]');
-    await expect(submitBtn).toBeVisible();
-
     // Verify demo login button exists
     const demoBtn = page.getByRole("button", { name: /Demo Captain Account/i });
     await expect(demoBtn).toBeVisible();
   });
 
-  // Test 2: Successful sign in with Demo Account and Header Profile integration
+  // Test 2: Invalid credentials rejection
+  test("rejects invalid credentials with visible error feedback", async ({ page }) => {
+    await gotoHydrated(page, "/login");
+
+    // Type invalid email format
+    const emailInput = page.locator('input[placeholder="captain@example.com"]');
+    const passwordInput = page.locator('input[placeholder="Enter your password"]');
+
+    await emailInput.fill("invalid-email");
+    await passwordInput.fill("short");
+
+    await page.locator('button[type="submit"]').click();
+
+    // Verify validation error is displayed
+    await expect(page.locator("text=Please enter a valid email address")).toBeVisible();
+    // Verify user remained on /login and was NOT authenticated
+    expect(page.url()).toContain("/login");
+  });
+
+  // Test 3: Successful sign in with Demo Account and Header Profile integration
   test("signs in with demo captain account and displays profile in header", async ({ page }) => {
     await gotoHydrated(page, "/login");
 
@@ -50,7 +65,7 @@ test.describe("Phase 2: Authentication & Data Foundation E2E", () => {
     await expect(headerProfile).toContainText("RAP-4091");
   });
 
-  // Test 3: Authentication survives ordinary page refresh
+  // Test 4: Authentication survives ordinary page refresh
   test("maintains valid authentication across page refresh", async ({ page }) => {
     await gotoHydrated(page, "/login");
 
@@ -68,7 +83,7 @@ test.describe("Phase 2: Authentication & Data Foundation E2E", () => {
     await expect(headerProfile).toContainText("RAP-4091");
   });
 
-  // Test 4: Settings page profile editing and persistence
+  // Test 5: Settings page profile editing and persistence
   test("updates Captain profile settings and persists changes", async ({ page }) => {
     await gotoHydrated(page, "/login");
     await page.getByRole("button", { name: /Demo Captain Account/i }).click();
@@ -98,7 +113,7 @@ test.describe("Phase 2: Authentication & Data Foundation E2E", () => {
     await expect(page.locator('input[placeholder="1500"]')).toHaveValue("2200");
   });
 
-  // Test 5: Explicit logout flow with confirmation modal
+  // Test 6: Explicit logout flow with confirmation modal
   test("explicit logout requires confirmation and does not clear stored data", async ({ page }) => {
     await gotoHydrated(page, "/login");
     await page.getByRole("button", { name: /Demo Captain Account/i }).click();
@@ -129,7 +144,7 @@ test.describe("Phase 2: Authentication & Data Foundation E2E", () => {
     await expect(page.locator("header")).not.toContainText("Rapido Captain Partner");
   });
 
-  // Test 6: Registration flow for new Captain
+  // Test 7: Registration flow for new Captain
   test("registers a new Captain account and establishes session", async ({ page }) => {
     await gotoHydrated(page, "/signup");
     await expect(page.locator("main h1")).toContainText("Register Captain Account");
@@ -147,5 +162,12 @@ test.describe("Phase 2: Authentication & Data Foundation E2E", () => {
     const header = page.locator("header");
     await expect(header).toContainText("Vijay Kumar");
     await expect(header).toContainText("RAP-8833");
+  });
+
+  // Test 8: Unauthenticated access to settings displays sign in notice
+  test("unauthenticated access to settings presents sign in guidance", async ({ page }) => {
+    await gotoHydrated(page, "/settings");
+    await expect(page.locator("main h1")).toContainText("Application Settings");
+    await expect(page.locator("text=Please sign in to edit Captain profile")).toBeVisible();
   });
 });
